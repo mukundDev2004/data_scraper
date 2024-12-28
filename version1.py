@@ -1,13 +1,11 @@
 
-import mouse
-import pyautogui
+import pyautogui # type: ignore
 import time
-import pyperclip
+import pyperclip # type: ignore
 import subprocess
-import psutil
 import os
 from module1.textclip import clipcopy as clipcopy
-from pynput import keyboard
+from pynput import keyboard # type: ignore
 
 ## Enable PyAutoGUI's built-in failsafe
 pyautogui.FAILSAFE = True  # Move the mouse to the top-left corner to stop the script
@@ -51,8 +49,7 @@ def open_excel_file(file_path):
         print(f"Opening file: {file_path}")
         # Use subprocess to open the file
         subprocess.run(f'start excel "{file_path}"', shell=True, check=True)
-        time.sleep(4)  # Wait for 4 seconds
-        print("Excel file opened successfully.")
+        time.sleep(0.8)
     except Exception as e:
         print(f"An error occurred while opening the Excel file: {e}")
 
@@ -63,7 +60,7 @@ def process_google_sheet():
     try:
         # Switch to the next tab
         pyautogui.hotkey("ctrl", "tab")
-        time.sleep(0.5)  # Wait for the tab to load
+        time.sleep(0.3)  # Wait for the tab to load
         pyautogui.hotkey("ctrl", "c")  # Copy selected data
         time.sleep(0.3)
         if __name__ == "__main__":
@@ -86,11 +83,6 @@ def process_google_sheet():
                     open_excel_file(new_file_path)
             else:
                 print("No data in clipboard to use for file naming.")
-
-        
-
-        
-
     except Exception as e:
         print(f"An error occurred while processing the Google Sheet: {e}")
         return []
@@ -101,12 +93,12 @@ def paste_to_first_empty_cell_in_A():
     """
     try:
         # Locate and click the Excel icon
-        locate_and_click(excel_img)
+        locate_and_click(excel_img, region=taskbar_region)
         time.sleep(0.5)
         
         # Ensure we're in column 'A'
         pyautogui.hotkey("ctrl", "home")  # Move to the top-left corner of the sheet
-        time.sleep(0.3)
+        time.sleep(0.2)
         pyautogui.press("down")  # Move to the first data row
         
         # Iterate through column 'A' to find the first empty cell
@@ -171,23 +163,24 @@ def clean_clipboard_content():
         print(f"An error occurred: {e}")
 
 
-def click_and_drag(pos, hold_time=2.0):
+def click_and_drag(pos, hold_time=0.8):
     pyautogui.moveTo(pos[0], pos[1], duration=0.3)
     pyautogui.click()
-    time.sleep(0.5)
+    time.sleep(0.3)
+    pyautogui.click()
+    time.sleep(0.2)
     checkpage("list.png",pos[0], pos[1])
     try:
         # Move to the start position and press the mouse button
-        pyautogui.moveTo(23, 843, duration=0.5)
+        pyautogui.moveTo(23, 843, duration=0.2)
         pyautogui.mouseDown()
 
         pyautogui.moveTo(1832, 1003, duration=0.4)
 
         # Hold the mouse button for the specified time
         time.sleep(hold_time)
-        print(f"Held for {hold_time} seconds")
-        pyautogui.moveTo(1865, 953, duration=0.2)
-        time.sleep(0.3)
+        pyautogui.moveTo(1865, 953, duration=0.1)
+        time.sleep(0.1)
         # Release the mouse button
         pyautogui.mouseUp()
         print("Mouse released")
@@ -207,7 +200,6 @@ def checksheet(img_path, region=None):
         try:
             # Locate the image
             center = pyautogui.locateCenterOnScreen(img_path, region=region, confidence=0.8)
-            time.sleep(0.5)
             if center:
                 print(f"Image '{img_path}' found at: {center}")
                 pyautogui.click(center)  # Click on the center of the located image
@@ -221,17 +213,25 @@ def checkpage(img_path,altimg = None,x=0,y=0):
         try:
             # Locate the image
             center = pyautogui.locateCenterOnScreen(img_path, confidence=0.8)
-            time.sleep(0.3)
+            cont = pyautogui.locateCenterOnScreen(altimg, confidence=0.8)
+            if cont:
+                
+                locate_and_click(altimg, confidence=0.8)
+                time.sleep(0.3)
+                locate_and_click(altimg, confidence=0.8)
+                time.sleep(0.3)
+                
             if center:
                     
                 if x == 0 and y == 0:
                     print(f"Image '{img_path}' found at: {center}")
                 else:
                     pyautogui.moveTo(x,y,duration=0.1)
-                    pyautogui.click(x,y)  # Click on the center of the located image
+                    pyautogui.click(x,y)
+                    time.sleep(0.2)  # Click on the center of the located image
                 if altimg != None:
                     locate_and_click(altimg, confidence=0.8)
-                time.sleep(0.5)
+                    time.sleep(0.2)
             else:
                 raise pyautogui.ImageNotFoundException
 
@@ -245,7 +245,7 @@ def checkpage(img_path,altimg = None,x=0,y=0):
 for j in range(789):
     pyautogui.moveTo(651, 1058, duration=0.3)
     pyautogui.click()
-    time.sleep(0.6)
+    time.sleep(0.4)
     process_google_sheet()
     pyautogui.moveTo(651, 1058, duration=0.3)
     pyautogui.click()
@@ -270,20 +270,19 @@ for j in range(789):
     pyautogui.hotkey("ctrl", "v")
     time.sleep(0.2)
     pyautogui.press("enter")
-    time.sleep(0.8)
+    time.sleep(1.0)
     checkpage(lockpage,altimg="continue.png")
 
     paste_to_first_empty_cell_in_A()
     # Locate and click the chrome icon in the taskbar
     locate_and_click(chrome_img, region=taskbar_region)
-
     time.sleep(0.4)
 
 
     
     # Step 2: Drag from (23, 843) to (1728, 955), hold for 2 seconds, and copy text
     position = (1772, 809)
-    click_and_drag(position, hold_time=2)
+    click_and_drag(position, hold_time=0.8)
 
     # Path to images
 
@@ -303,7 +302,7 @@ for j in range(789):
 
 
     position = (1764, 834)
-    click_and_drag(position, hold_time=2)
+    click_and_drag(position, hold_time=0.8)
 
     pyautogui.hotkey("alt", "tab")
     time.sleep(0.5)
@@ -335,14 +334,22 @@ for j in range(789):
         time.sleep(0.2)
         pyautogui.moveTo(651, 1058, duration=0.3)
         pyautogui.click()
-        time.sleep(0.6)
+        time.sleep(0.4)
         checksheet("sheetson.png", region=taskbar_region)
         pyautogui.press("enter")
-        time.sleep(0.4)
+        time.sleep(0.3)
         pyautogui.press("enter")
     position = (1771, 864)
-    click_and_drag(position, hold_time=2)
+    click_and_drag(position, hold_time=0.8)
+    # Get data from clipboard and strip extra spaces
+    clipboard_data = pyperclip.paste().strip()
 
+            # Split the data into a list of links
+    links = clipboard_data.splitlines()
+
+            # Count the number of links
+    link_length = len(links)
+    print(f"Number of links in clipboard: {link_length}")
     sheet_img = "sheet.png"
     # Locate and click the chrome icon in the taskbar
     pyautogui.moveTo(651, 1058, duration=0.3)
@@ -359,23 +366,9 @@ for j in range(789):
     time.sleep(0.2)
     pyautogui.press("right")
     time.sleep(0.2)
-    pyautogui.hotkey("ctrl","shift","down")
-    time.sleep(0.2)
-    pyautogui.hotkey("ctrl", "c")
-    # Get data from clipboard and strip extra spaces
-    clipboard_data = pyperclip.paste().strip()
+    
 
-            # Split the data into a list of links
-    links = clipboard_data.splitlines()
-
-            # Count the number of links
-    link_length = len(links)
-    print(f"Number of links in clipboard: {link_length}")
-
-    time.sleep(0.2)
-    pyautogui.press("down")
-    time.sleep(0.2)
-    pyautogui.press("up")
+    
     for i in range(link_length):
         time.sleep(0.2)
         pyautogui.hotkey("ctrl", "c")
@@ -397,7 +390,7 @@ for j in range(789):
         
         # Step 2: Drag from (23, 843) to (1728, 955), hold for 2 seconds, and copy text
         position = (1753, 885)
-        click_and_drag(position, hold_time=2)
+        click_and_drag(position, hold_time=0.8)
         time.sleep(0.3)
         cell_data = pyperclip.paste().strip()
                 

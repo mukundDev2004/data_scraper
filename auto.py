@@ -93,8 +93,8 @@ def paste_to_first_empty_cell_in_A():
     """
     try:
         # Locate and click the Excel icon
-        locate_and_click(excel_img)
-        time.sleep(0.3)
+        locate_and_click(excel_img, region=taskbar_region)
+        time.sleep(0.5)
         
         # Ensure we're in column 'A'
         pyautogui.hotkey("ctrl", "home")  # Move to the top-left corner of the sheet
@@ -331,7 +331,15 @@ for j in range(789):
         pyautogui.press("enter")
     position = (1771, 864)
     click_and_drag(position, hold_time=2)
+    # Get data from clipboard and strip extra spaces
+    clipboard_data = pyperclip.paste().strip()
 
+            # Split the data into a list of links
+    links = clipboard_data.splitlines()
+
+            # Count the number of links
+    link_length = len(links)
+    print(f"Number of links in clipboard: {link_length}")
     sheet_img = "sheet.png"
     # Locate and click the chrome icon in the taskbar
     pyautogui.moveTo(651, 1058, duration=0.3)
@@ -348,23 +356,9 @@ for j in range(789):
     time.sleep(0.2)
     pyautogui.press("right")
     time.sleep(0.2)
-    pyautogui.hotkey("ctrl","shift","down")
-    time.sleep(0.2)
-    pyautogui.hotkey("ctrl", "c")
-    # Get data from clipboard and strip extra spaces
-    clipboard_data = pyperclip.paste().strip()
+    
 
-            # Split the data into a list of links
-    links = clipboard_data.splitlines()
-
-            # Count the number of links
-    link_length = len(links)
-    print(f"Number of links in clipboard: {link_length}")
-
-    time.sleep(0.2)
-    pyautogui.press("down")
-    time.sleep(0.2)
-    pyautogui.press("up")
+    
     for i in range(link_length):
         time.sleep(0.2)
         pyautogui.hotkey("ctrl", "c")
